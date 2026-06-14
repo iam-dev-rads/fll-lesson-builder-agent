@@ -40,7 +40,7 @@ def test_too_few_slides():
     }
     data = {
         "lesson_title": "Too Short",
-        "slides": [slide] * 7,
+        "slides": [slide] * 4,
         "opening_hook": "hook",
         "closing_exercise": {
             "title": "t",
@@ -49,14 +49,14 @@ def test_too_few_slides():
         },
         "coach_script": {
             "intro": "i",
-            "per_slide": ["p"] * 7,
+            "per_slide": ["p"] * 4,
             "wrap_up": "w"
         }
     }
     try:
         LessonContent(**data)
     except ValidationError as e:
-        assert "Lesson must have at least 8 slides" in str(e)
+        assert "Lesson must have at least 5 slides" in str(e)
         print("Test Too Few Slides: PASSED")
 
 def test_trim_slides():

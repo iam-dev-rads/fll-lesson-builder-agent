@@ -89,7 +89,17 @@ async def validate_content_node(state: AgentState) -> Dict[str, Any]:
             raise ValueError("No JSON object found in response.")
         
         json_str = json_match.group(1)
-        parsed_data = json.loads(json_str)
+        
+        try:
+            parsed_data = json.loads(json_str)
+        except json.JSONDecodeError as json_err:
+            try:
+                import ast
+                parsed_data = ast.literal_eval(json_str)
+                if not isinstance(parsed_data, dict):
+                    raise ValueError("Parsed content is not a dictionary.")
+            except Exception:
+                raise json_err
         
         # Validate with Pydantic
         lesson_content = LessonContent(**parsed_data)

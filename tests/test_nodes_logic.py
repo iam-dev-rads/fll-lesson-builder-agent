@@ -59,10 +59,33 @@ async def test_content_validation():
     assert isinstance(result["structured_content"], dict)
     print("Content Validation: PASSED")
 
+async def test_content_validation_single_quotes():
+    print("\n--- Testing Content Validation with Single Quotes ---")
+    slide = "{'slide_number': 1, 'title': 'Intro', 'bullet_points': ['A', 'B'], 'example': 'Bike', 'speaker_note': 'Hi'}"
+    slides = ",".join([slide] * 5)
+    script_items = ",".join(["'S'"] * 5)
+    
+    single_quoted_json = f"""
+    {{
+      'lesson_title': 'Gears 101',
+      'grade_level': '5th-8th grade',
+      'slides': [{slides}],
+      'opening_hook': 'Hook',
+      'closing_exercise': {{'title': 'T', 'instructions': 'I', 'expected_outcome': 'O'}},
+      'coach_script': {{'intro': 'Hi', 'per_slide': [{script_items}], 'wrap_up': 'Bye'}}
+    }}
+    """
+    state = {"structured_content": f"Some text before {single_quoted_json} and after."}
+    result = await validate_content_node(state)
+    assert result["status"] == "content_validated"
+    assert isinstance(result["structured_content"], dict)
+    print("Content Validation with Single Quotes: PASSED")
+
 async def run_tests():
     await test_input_validation()
     await test_folder_creation()
     await test_content_validation()
+    await test_content_validation_single_quotes()
 
 if __name__ == "__main__":
     asyncio.run(run_tests())
